@@ -13,6 +13,10 @@ import org.springframework.jms.core.JmsTemplate;
 public class ActiveMQConfig {
     @Value("${spring.activemq.broker-url}")
     public String brokerUrl;
+    @Value("${spring.activemq.user}")
+    public String brokerUsername;
+    @Value("${spring.activemq.password}")
+    public String brokerPassword;
 
     @Bean
     public Queue queue(){
@@ -22,7 +26,10 @@ public class ActiveMQConfig {
     @Bean
     public ActiveMQConnectionFactory activeMQConnectionFactory(){
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
+        activeMQConnectionFactory.setUserName(brokerUsername);
+        activeMQConnectionFactory.setPassword(brokerPassword);
         return activeMQConnectionFactory;
     }
 
