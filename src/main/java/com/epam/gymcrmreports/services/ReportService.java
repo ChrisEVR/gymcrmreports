@@ -13,6 +13,14 @@ import java.util.logging.Logger;
 @Service
 public class ReportService {
     private static final Logger logger = Logger.getLogger(ReportService.class.getName());
+    private final String MESSAGE_KEY_ID = "id";
+    private final String MESSAGE_KEY_USERNAME = "username";
+    private final String MESSAGE_KEY_FIRST_NAME = "firstName";
+    private final String MESSAGE_KEY_LAST_NAME = "lastName";
+    private final String MESSAGE_KEY_IS_ACTIVE = "isActive";
+    private final String MESSAGE_KEY_TRAINING_DURATION = "trainingDate";
+    private final String MESSAGE_KEY_TRAINING_DATE = "trainingDuration";
+    private final String MESSAGE_KEY_ADD = "add";
 
     @Value("${spring.activemq.broker-url}")
     public String brokerUrl;
@@ -20,28 +28,28 @@ public class ReportService {
     @Autowired
     ReportRepository reportRepository;
 
-    @JmsListener(destination = "reports")
+    @JmsListener(destination = "${gymcrmreports.queue-name}")
     public void updateWorkload(Map<String, Object> workload){
-        String username = (String) workload.get("username");
+        String username = (String) workload.get(MESSAGE_KEY_USERNAME);
         Report report = reportRepository.findByUsername(username) == null ?
                 new Report() : reportRepository.findByUsername(username);
-        Long trainingDuration = (Long) workload.get("trainingDuration");
-        String[] date = workload.get("trainingDate").toString().split("-");
+        Long trainingDuration = (Long) workload.get(MESSAGE_KEY_TRAINING_DURATION);
+        String[] date = workload.get(MESSAGE_KEY_TRAINING_DATE).toString().split("-");
 
         Map<String, Map<String, Long>> summaryTrainingDuration = updateDuration(
                 report,
                 date,
                 trainingDuration,
-                (Boolean) workload.get("add")
+                (Boolean) workload.get(MESSAGE_KEY_ADD)
         );
 
         if(report != null){
             report.setId(report.getId());
         }
-        report.setUsername((String) workload.get("username"));
-        report.setTrainerFirstName((String) workload.get("firstName"));
-        report.setTrainerLastName((String) workload.get("lastName"));
-        report.setActive((Boolean) workload.get("isActive"));
+        report.setUsername((String) workload.get(MESSAGE_KEY_USERNAME));
+        report.setTrainerFirstName((String) workload.get(MESSAGE_KEY_FIRST_NAME));
+        report.setTrainerLastName((String) workload.get(MESSAGE_KEY_LAST_NAME));
+        report.setActive((Boolean) workload.get(MESSAGE_KEY_IS_ACTIVE));
         report.setTrainingSummaryDuration(summaryTrainingDuration);
 
         reportRepository.save(report);
