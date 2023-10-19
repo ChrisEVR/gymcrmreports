@@ -27,8 +27,11 @@ public class ReportService {
     @Value("${spring.activemq.broker-url}")
     public String brokerUrl;
 
-    @Autowired
     ReportRepository reportRepository;
+
+    public ReportService(ReportRepository reportRepository) {
+        this.reportRepository = reportRepository;
+    }
 
     @JmsListener(destination = "${gymcrmreports.queue-name}")
     public void updateWorkload(Map<String, Object> workload) {
