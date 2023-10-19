@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Service
@@ -29,7 +31,7 @@ public class ReportService {
     ReportRepository reportRepository;
 
     @JmsListener(destination = "${gymcrmreports.queue-name}")
-    public void updateWorkload(Map<String, Object> workload){
+    public void updateWorkload(Map<String, Object> workload) {
         String username = (String) workload.get(MESSAGE_KEY_USERNAME);
         Report report = reportRepository.findByUsername(username) == null ?
                 new Report() : reportRepository.findByUsername(username);
@@ -43,7 +45,7 @@ public class ReportService {
                 (Boolean) workload.get(MESSAGE_KEY_ADD)
         );
 
-        if(report != null){
+        if (report != null) {
             report.setId(report.getId());
         }
         report.setUsername((String) workload.get(MESSAGE_KEY_USERNAME));
@@ -60,18 +62,18 @@ public class ReportService {
             String[] date,
             Long trainingDuration,
             Boolean add
-    ){
+    ) {
         logger.info("date:" + Arrays.toString(date));
         String year = date[0];
         String month = date[1];
         Map<String, Map<String, Long>> trainingSummary = report != null && report.getTrainingSummaryDuration() != null ?
                 report.getTrainingSummaryDuration() : new HashMap<>();
 
-        if(!add){
+        if (!add) {
             trainingDuration *= -1;
         }
 
-        if(trainingSummary.containsKey(year)){
+        if (trainingSummary.containsKey(year)) {
             Map<String, Long> yearSummary = trainingSummary.get(year);
             Long duration = yearSummary.containsKey(month) ?
                     yearSummary.get(month) + trainingDuration : trainingDuration;

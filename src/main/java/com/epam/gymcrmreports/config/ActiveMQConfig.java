@@ -19,12 +19,12 @@ public class ActiveMQConfig {
     public String brokerPassword;
 
     @Bean
-    public Queue queue(){
+    public Queue queue() {
         return new ActiveMQQueue("reports");
     }
 
     @Bean
-    public ActiveMQConnectionFactory activeMQConnectionFactory(){
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
 
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
@@ -34,7 +34,7 @@ public class ActiveMQConfig {
     }
 
     @Bean
-    public JmsTemplate jmsTemplate(){
+    public JmsTemplate jmsTemplate() {
         return new JmsTemplate(activeMQConnectionFactory());
     }
 }
